@@ -5,30 +5,24 @@ from pinecone import Pinecone, ServerlessSpec
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from langchain.document_loaders import PyPDFLoader
+
+# Load environment variables
 load_dotenv()
 
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")   # ✅ use OpenRouter only
 
 os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+os.environ["OPENROUTER_API_KEY"] = OPENROUTER_API_KEY   # ✅ no OPENAI_API_KEY here
 
 # 1️⃣ Load and prepare data
-# ✅ Use a folder path, not a single file
-from langchain.document_loaders import PyPDFLoader
-
-# Path to your PDF
 pdf_path = r"C:\Users\hp\OneDrive\Desktop\Medical Chatbot\Medical-Chatbot\src\data\Medical_book.pdf"
 
-# Load PDF
 loader = PyPDFLoader(pdf_path)
 extracted_data = loader.load()
 
-# Show results
-print(len(extracted_data))   # Number of chunks
-print(extracted_data[0])     # First chunk
-
-extracted_data
+print(len(extracted_data))
+print(extracted_data[0])
 
 filter_data = filter_to_minimal_docs(extracted_data)
 text_chunks = text_split(filter_data)
@@ -41,7 +35,6 @@ if len(text_chunks) > 0:
 model_name = "sentence-transformers/all-MiniLM-L6-v2"
 embeddings = HuggingFaceEmbeddings(model_name=model_name)
 
-# Test embedding dimension
 sample_vector = embeddings.embed_query("Hello world")
 print(f"✅ Sample embedding length: {len(sample_vector)} (should be 384)")
 
